@@ -3,9 +3,8 @@
 # Date: 9/25/2020
 # Project: Programming Assignment 3
 # Server.py
-# Allows creation of sockets within program
-from socket import *
-import threading
+from socket import *    # Allows creation of sockets
+import threading        # Allows creation of threads
 
 
 class TCPClient(threading.Thread):
@@ -15,48 +14,69 @@ class TCPClient(threading.Thread):
         self.name = name
 
     def run(self):
-        count = 1
+        closed = 0  # Keeps track of how many clients are closed
         while True:
-            # Retrieve and send message from client
-            message = connectionSocket.recv(1024).decode()
-            if message == "exit":
+            try:
+                # Retrieve message from client
+                message = connectionSocket.recv(1024).decode()
+                # Catch empty messages
+                # if message == "":
+                #     continue
+                # Count number of closed clients
+                if message == "exit" and closed < 2:
+                    closed += 1
+                    continue
+                # when both clients are closed exit while loop
+                elif closed > 1:
+                    break
+                else:
+                    # Store message receipt order (client name)
+                    clientOrder.append(self.name)
+                    # Store message receipt order (message)
+                    received.append(message)
+                    # Print received message info
+                    print("Client " + self.name + " sent message " + str(received.index(message)+1) + ": " + message)
+                    # send response once both messages are received
+                    if len(received) >= 2:
+                        connectionSocket.send((clientOrder[0] + ": " + received[0]
+                                               + " received before " + clientOrder[1] + ": " + received[1]).encode())
+            except error:
                 break
-            print("Client " + self.name + " sent message " + str(count) + ": " + message)
-            clientOrder.append(self.name)
-            messageOrder.append(message)
-            count += 1
+serverName = 'Justin-PC'
 serverPort = 12000
 # Create a TCP socket
 serverSocket = socket(AF_INET, SOCK_STREAM)
+serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 # Assign IP address and port number to socket
-serverSocket.bind(('', serverPort))
+serverSocket.bind((serverName, serverPort))
 threads = []        # Keeps track of threads
-clientOrder = []
-messageOrder = []
-serverMessage = ""
+clientOrder = []    # Store client name's in message receipt order
+received = []       # Store messages in receipt order
 numThreads = 2
-names = ['X', 'Y']  # t1 = X, t2 = Y
+
 print("The server is waiting to receive 2 connections...\n")
 
-while True:
+while len(threads) < 2:
     serverSocket.listen(2)
     connectionSocket, addr = serverSocket.accept()
+
+    # Call first client 'X'
     if 'X' not in locals():
         print("Accepted connection, calling it client X")
         connectionSocket.send("Client X connected".encode())
         X = TCPClient(serverPort, 'X')
         X.start()
         threads.append(X)
-    else:
+
+    # Call second client 'Y'
+    elif 'X' in locals():
         print("Accepted connection, calling it client Y")
         connectionSocket.send("Client Y connected".encode())
         Y = TCPClient(serverPort, 'Y')
         Y.start()
-        threads.append(Y)
         print("\nWaiting to receive messages from client X and Y\n")
+        threads.append(Y)
 
-connectionSocket.send(("Client " + clientOrder.pop(0) + ": " + messageOrder.pop(0)
-                       + "received before " + clientOrder.pop() + ": " + messageOrder.pop()).encode())
 print("\nWaiting a bit for clients to close their connections.")
 # Wait for each thread to finish
 for thread in threads:

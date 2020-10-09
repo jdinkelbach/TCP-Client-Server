@@ -10,14 +10,16 @@ from socket import *
 serverName = 'Justin-PC'
 serverPort = 12000
 message = ""
-
+# Create a TCP socket
 ClientX = socket(AF_INET, SOCK_STREAM)
+# Establish connection
 ClientX.connect((serverName, serverPort))
-
-while message != "exit":
+while True:
+    if message == "exit":
+        break
     message = ClientX.recv(1024).decode()
     if len(message) > 0:
-        print("From Server: " + message)
+        print("\nFrom Server: " + message + "\n")
     message = input("Enter a message to send to the server: ")
     ClientX.send(message.encode())
 ClientX.close()
