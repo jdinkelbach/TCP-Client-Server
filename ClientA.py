@@ -6,8 +6,7 @@
 # Allows creation of sockets within program
 from socket import *
 
-
-serverName = 'Justin-PC'
+serverName = 'Justin-PC'  # Change this to the hostname of your PC
 serverPort = 12000
 message = ""
 # Create a TCP socket
