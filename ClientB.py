@@ -20,6 +20,5 @@ while True:
     if len(message) > 0:
         print("\nFrom Server: " + message + "\n")
     message = input("Enter a message to send to the server: ")
-    # message = input("Enter a message to send to the server: ")
     ClientY.send(message.encode())
 ClientY.close()
