@@ -1,8 +1,10 @@
-# Team: RGB Alphas
-# Names: Justin Dinkelbach, Timothy Hinea, David Sullivan, Brandon Lee
+# Name: Justin Dinkelbach
 # Date: 9/25/2020
 # Project: Programming Assignment 3
 # Server.py
+# We need threads so that program flow will not be impeded by blocking operations such as send() and recv() with blocking
+# mode enabled.
+# Threads allow parallel execution which can greatly improve performance and allows the server to handle multiple tasks.
 from socket import *  # Allows creation of sockets
 import threading  # Allows creation of threads
 class TCPClient(threading.Thread):

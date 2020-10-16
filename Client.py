@@ -1,5 +1,4 @@
-# Team: RGB Alphas
-# Names: Justin Dinkelbach, Timothy Hinea, David Sullivan, Brandon Lee
+# Name: Justin Dinkelbach
 # Date: 9/25/2020
 # Project: Programming Assignment 3
 # Client.py
@@ -19,6 +18,6 @@ while True:
     message = ClientX.recv(1024).decode()
     if len(message) > 0:
         print("\nFrom Server: " + message + "\n")
-    message = input("Enter a message to send to the server: ")
+    message = raw_input("Enter a message to send to the server: ")
     ClientX.send(message.encode())
 ClientX.close()
